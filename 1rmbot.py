@@ -1,3 +1,4 @@
+#1RMBot - Chris McCall
 import twitter
 import re
 import sqlite3 as lite
@@ -25,7 +26,7 @@ def insertLastMention(connection, is_dm, id):
     cur = connection.cursor()
     try:
         cur.execute("INSERT INTO " + table + "(TwitterId,  DateTime) VALUES(?, ?)", ids)
-        print "inserted into %s: %s" % (table, ids.__str__())
+        #print "inserted into %s: %s" % (table, ids.__str__())
         con.commit()
         cur.close()
     except lite.Error, e:
@@ -69,7 +70,7 @@ def recordHistory (connection, user, is_dm, weight, inbound_id):
         return False
 
     history = (user, weight["weight"], weight["reps"],inbound_id, is_dm, lite.TimestampFromTicks(time.time()) )
-    print "Committing history: " + history.__str__()
+    #print "Committing history: " + history.__str__()
 
     cur = connection.cursor()
     try:
@@ -154,9 +155,8 @@ def do_1rm_dm(sender_id, screen_name, max, api):
         return False
 
     msg = max.__str__() + " lbs"
-    print "## DMing " + screen_name.__str__() + "(" + sender_id.__str__() + "): " + msg.__str__()
-    #todo post actual DM
-    #api.PostDirectMessage()
+    print "## DMing " + screen_name.__str__() + " " + msg.__str__()
+    api.PostDirectMessage(screen_name, msg)
     return True
 
 def do_1rm_tweet(user, status_id, max, api):
@@ -172,10 +172,9 @@ def do_1rm_tweet(user, status_id, max, api):
     if api is None:
         return False
 
-    tweet = "## Tweeting @" + user.GetScreenName() + " " + max.__str__() + " lbs"
+    tweet = "@" + user.GetScreenName() + " " + max.__str__() + " lbs"
     print tweet
-    #todo post actual status
-    #api.PostUpdate()
+    api.PostUpdate(tweet, status_id)
     return True
 
 api = twitter.Api(consumer_key='iKZaKQ7V7gBqychC4iBHQ',
@@ -196,7 +195,7 @@ try:
 
 except lite.Error, e:
     print "DB Error: %s" % e.args[0]
-    cur.close()
+    #cur.close()
     con.close()
     sys.exit(1)
 
@@ -208,7 +207,7 @@ previous_dm_since_id = dm_since_id
 
 while True:
     print "===========attempting lookups==========="
-    print "mention since id: " + mention_since_id.__str__()
+    #print "mention since id: " + mention_since_id.__str__()
     mentions = api.GetMentions(mention_since_id)
 
     for m in mentions:
@@ -219,7 +218,7 @@ while True:
                 recordHistory(con, m.GetUser().GetScreenName(), False, weights, m.GetId())
 
 
-    print "dm since id: " + dm_since_id.__str__()
+    #print "dm since id: " + dm_since_id.__str__()
     dms = api.GetDirectMessages(dm_since_id)
 
     for dm in dms:
@@ -240,5 +239,4 @@ while True:
     time.sleep(15)
 
 if con:
-    cur.close()
     con.close()
