@@ -177,10 +177,10 @@ def do_1rm_tweet(user, status_id, max, api):
     api.PostUpdate(tweet, status_id)
     return True
 
-api = twitter.Api(consumer_key='x',
-                  consumer_secret='x',
-                  access_token_key='x',
-                  access_token_secret='x')
+api = twitter.Api(consumer_key='',
+                  consumer_secret='',
+                  access_token_key='',
+                  access_token_secret='')
 
 try:
     con = lite.connect('1rmbot.db')
